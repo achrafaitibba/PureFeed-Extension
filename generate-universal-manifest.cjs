@@ -7,7 +7,7 @@ console.log('Generating universal manifest with wildcard permissions...');
 const universalManifest = {
     "manifest_version": 3,
     "name": "PureFeed - Social Media Cleaner",
-    "version": "2.0",
+    "version": "1.0.0",
     "description": "Clean up your social media feeds by hiding distracting sections and redirecting to focused content",
     "permissions": [
         "storage",
