@@ -1,0 +1,60 @@
+{
+    "sections": [
+        {
+            "id": "twitter_recommendations",
+            "name": "X: Who to Follow/You might like",
+            "platform": "twitter",
+            "xpaths": ["//aside[@aria-label='Who to follow']/parent::div"]
+        },
+        {
+            "id": "twitter_trends",
+            "name": "X: What's happening aka 'Trends'",
+            "platform": "twitter",
+            "xpaths": ["//div[@aria-label='Timeline: Trending now']/parent::section"]
+        },
+        {
+            "id": "twitter_foryoupage",
+            "name": "X: For You Page",
+            "platform": "twitter",
+            "xpaths": ["//div[@role='presentation']//span[text()='For you']/parent::div"],
+            "toClick": "//div[@role='presentation']//span[text()='Following']/parent::div"
+        },
+        {
+            "id": "linkedin_profiles",
+            "name": "LinkedIn: More profiles for you'",
+            "platform": "linkedin",
+            "xpaths": ["//span[contains(text(),'More profiles for you')]/ancestor::section[1]"]
+        },
+        {
+            "id": "linkedin_suggestions",
+            "name": "LinkedIn: More suggestions for you",
+            "platform": "linkedin",
+            "xpaths": ["//h2[contains(text(),'More suggestions for you')]/ancestor::section[1]"]
+        },
+        {
+            "id": "linkedin_suggestions",
+            "name": "LinkedIn: People you may know",
+            "platform": "linkedin",
+            "xpaths": ["//span[contains(text(),'People you may know')]/ancestor::section[1]"]
+        },
+        {
+            "id": "linkedin_add_your_feed",
+            "name": "LinkedIn: Add to your feed",
+            "platform": "linkedin",
+            "xpaths": ["//div[@class = 'feed-follows-module']"]
+        },
+        {
+            "id": "youtube_redirect",
+            "name": "YouTube - Home to Feed Redirect",
+            "platform": "youtube",
+            "currentPath": "/",
+            "newPath": "/feed/subscriptions"
+        },
+        {
+            "id": "reddit_remove_ads",
+            "name": "Reddit - Remove Promoted Ads",
+            "platform": "reddit",
+            "xpaths": ["//shreddit-ad-post"]
+        }
+    ]
+}
