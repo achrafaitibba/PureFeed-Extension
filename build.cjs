@@ -132,7 +132,7 @@ if (fs.existsSync('popup.html')) {
     // Remove DEV mode indicator for production
     popupContent = popupContent.replace(
         /<div style="position: fixed;[^>]*>DEV mode<\/div>\s*/,
-        'Prod'
+        ''
     );
     
     fs.writeFileSync('popup.html', popupContent);
