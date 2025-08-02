@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 350px;
+            padding: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .main-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .main-toggle label {
+            font-weight: 600;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+        
+        .toggle {
+            width: 50px;
+            height: 26px;
+            background: #ccc;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .toggle.active {
+            background: #4CAF50;
+        }
+        
+        .toggle.active::after {
+            transform: translateX(24px);
+        }
+        
+        .sections-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .sections-container.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .section-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-item:last-child {
+            border-bottom: none;
+        }
+        
+        .section-label {
+            flex: 1;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        
+        .section-toggle {
+            width: 40px;
+            height: 20px;
+            background: #ddd;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .section-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .section-toggle.active {
+            background: #4CAF50;
+        }
+        
+        .section-toggle.active::after {
+            transform: translateX(20px);
+        }
+        
+        .section-toggle.redirect-toggle.active {
+            background: #2196F3;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+        
+        .status.enabled {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.disabled {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        #loadingMessage {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>PureFeed</h2>
+    </div>
+    
+    <div class="main-toggle">
+        <label for="mainToggle">Extension</label>
+        <div class="toggle" id="mainToggle"></div>
+    </div>
+    
+    <div class="sections-container" id="sectionsContainer">
+        <div id="loadingMessage">Loading sections...</div>
+    </div>
+    
+    <div class="status" id="status">Extension is loading...</div>
+    <script src="popup-bundled.js"></script>
+</body>
+</html>
+
