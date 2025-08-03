@@ -1,0 +1,52 @@
+{
+    "name": "purefeed-extension",
+    "version": "0.0.1",
+    "description": "Clean up your social media feeds by hiding distracting sections and redirecting to focused content",
+    "type": "module",
+    "scripts": {
+        "build": "node build.cjs",
+        "clean": "rm -f content-bundled.js popup-bundled.js manifest.json manifest-modular.json && cp popup-template.html popup.html",
+        "rebuild": "npm run clean && npm run build",
+        "manifest": "node generate-universal-manifest.cjs",
+        "dev": "npm run manifest && cp manifest-modular.json manifest.json && cp popup-template.html popup.html",
+        "prod": "npm run build",
+        "add-platform": "echo ' Just add your platform to config.json and run: npm run build'",
+        "lint": "eslint src/ --ext .js",
+        "lint:fix": "eslint src/ --ext .js --fix",
+        "format": "prettier --write src/**/*.js *.md *.json",
+        "format:check": "prettier --check src/**/*.js *.md *.json",
+        "test": "echo 'No tests configured yet'",
+        "zip": "npm run prod && zip -r purefeed-extension.zip . -x '*.git*' 'node_modules/*' 'backup/*' 'tests/*' '*.zip' '*.md' 'package*.json' 'build.cjs' 'generate-*.cjs' 'manifest-*.json' 'popup-*.html'",
+        "validate": "npm run lint && npm run format:check",
+        "precommit": "npm run validate",
+        "package:chrome": "npm run prod && mkdir -p packages/chrome && cp manifest.json popup.html content-bundled.js popup-bundled.js packages/chrome/ && cp -r icons packages/chrome/ && cd packages/chrome && zip -r ../../purefeed-extension-chrome.zip .",
+        "package:firefox": "npm run prod && mkdir -p packages/firefox && cp manifest.json popup.html content-bundled.js popup-bundled.js packages/firefox/ && cp -r icons packages/firefox/ && cd packages/firefox && zip -r ../../purefeed-extension-firefox.zip .",
+        "package:all": "npm run package:chrome && npm run package:firefox",
+        "release:patch": "npm version patch --no-git-tag-version",
+        "release:minor": "npm version minor --no-git-tag-version",
+        "release:major": "npm version major --no-git-tag-version"
+    },
+    "keywords": [
+        "chrome-extension",
+        "social-media",
+        "productivity",
+        "focus"
+    ],
+    "author": "PureFeed Team",
+    "license": "MIT",
+    "devDependencies": {
+        "eslint": "^8.57.0",
+        "prettier": "^3.2.5"
+    },
+    "engines": {
+        "node": ">=14.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/achrafaitibba/PureFeed-Extension.git"
+    },
+    "bugs": {
+        "url": "https://github.com/achrafaitibba/PureFeed-Extension/issues"
+    },
+    "homepage": "https://github.com/achrafaitibba/PureFeed-Extension#readme"
+}
