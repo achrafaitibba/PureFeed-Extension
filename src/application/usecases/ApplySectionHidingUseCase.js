@@ -14,6 +14,10 @@ export class ApplySectionHidingUseCase {
      */
     execute(enabledSections, xpathEvaluator, elementClicker) {
         const hidingSections = enabledSections.filter(section => section.isHideSection());
-        this.elementHidingService.applySectionHiding(hidingSections, xpathEvaluator, elementClicker);
+        this.elementHidingService.applySectionHiding(
+            hidingSections,
+            xpathEvaluator,
+            elementClicker
+        );
     }
 }

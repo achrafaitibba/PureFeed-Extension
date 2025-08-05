@@ -15,12 +15,12 @@ export class DOMManipulator {
             XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
             null
         );
-        
+
         const elements = [];
         for (let i = 0; i < result.snapshotLength; i++) {
             elements.push(result.snapshotItem(i));
         }
-        
+
         return elements;
     }
 

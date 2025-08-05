@@ -15,17 +15,17 @@ export class URLChangeDetector {
         // Override history methods
         const originalPushState = history.pushState;
         const originalReplaceState = history.replaceState;
-        
+
         history.pushState = (...args) => {
             originalPushState.apply(history, args);
             this.checkUrlChange();
         };
-        
+
         history.replaceState = (...args) => {
             originalReplaceState.apply(history, args);
             this.checkUrlChange();
         };
-        
+
         // Listen for popstate events
         window.addEventListener('popstate', () => {
             this.checkUrlChange();

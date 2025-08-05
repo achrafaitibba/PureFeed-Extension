@@ -16,6 +16,11 @@ export class HandleRedirectsUseCase {
      */
     execute(enabledSections, currentPath, currentHost, redirectFunction) {
         const redirectSections = enabledSections.filter(section => section.isRedirectSection());
-        return this.redirectService.handleRedirects(redirectSections, currentPath, currentHost, redirectFunction);
+        return this.redirectService.handleRedirects(
+            redirectSections,
+            currentPath,
+            currentHost,
+            redirectFunction
+        );
     }
 }

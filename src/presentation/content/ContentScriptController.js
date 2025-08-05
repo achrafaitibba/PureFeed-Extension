@@ -19,34 +19,34 @@ export class ContentScriptController {
         // Repositories
         this.configRepository = new ChromeConfigRepository();
         this.settingsRepository = new ChromeSettingsRepository();
-        
+
         // Services
         this.elementHidingService = new ElementHidingService();
         this.redirectService = new RedirectService();
-        
+
         // Use cases
         this.initializeExtensionUseCase = new InitializeExtensionUseCase(
-            this.configRepository, 
+            this.configRepository,
             this.settingsRepository
         );
         this.applySectionHidingUseCase = new ApplySectionHidingUseCase(this.elementHidingService);
         this.handleRedirectsUseCase = new HandleRedirectsUseCase(this.redirectService);
-        
+
         // State
         this.settings = null;
         this.sections = [];
         this.observer = null;
         this.urlChangeDetector = null;
         this.initialized = false;
-        
+
         // Bound methods for event handlers
         this.boundHandleMessage = this.handleMessage.bind(this);
         this.boundHandleUrlChange = this.handleUrlChange.bind(this);
         this.boundHandleDOMUpdates = Utils.debounce(
-            this.handleDOMUpdates.bind(this), 
+            this.handleDOMUpdates.bind(this),
             DefaultConfig.DEBOUNCE_DELAY
         );
-        
+
         this.init();
     }
 
@@ -56,33 +56,33 @@ export class ContentScriptController {
     async init() {
         try {
             Utils.log('Initializing PureFeed extension...');
-            
+
             // Initialize extension data
             const initResult = await this.initializeExtensionUseCase.execute();
             this.settings = initResult.settings;
             this.sections = initResult.sections;
-            
+
             // Smart platform detection - only activate if current site has sections
             const currentHostname = window.location.hostname;
-            const hasSectionsForThisSite = this.sections.some(section => 
+            const hasSectionsForThisSite = this.sections.some(section =>
                 section.appliesToHostname(currentHostname)
             );
-            
+
             if (!hasSectionsForThisSite) {
                 Utils.log(`No sections configured for ${currentHostname}, extension inactive`);
                 return; // Don't initialize if no sections for this site
             }
-            
+
             Utils.log(`Found sections for ${currentHostname}, activating extension`);
-            
+
             // Setup event listeners
             this.setupMessageListener();
             this.setupUrlChangeDetection();
             this.setupDOMObserver();
-            
+
             // Handle initial state
             await this.handleInitialState();
-            
+
             this.initialized = true;
             Utils.log('PureFeed extension initialized successfully');
         } catch (error) {
@@ -94,13 +94,15 @@ export class ContentScriptController {
      * Handle initial state - redirects and hiding
      */
     async handleInitialState() {
-        if (!this.settings.isEnabled()) {return;}
-        
+        if (!this.settings.isEnabled()) {
+            return;
+        }
+
         const enabledSections = this.settings.getEnabledSections(this.sections);
-        
+
         // Handle redirects first
         this.handleRedirects(enabledSections);
-        
+
         // Apply initial hiding
         this.applyHiding(enabledSections);
     }
@@ -123,20 +125,20 @@ export class ContentScriptController {
      * Setup DOM mutation observer
      */
     setupDOMObserver() {
-        this.observer = DOMManipulator.createMutationObserver((mutations) => {
+        this.observer = DOMManipulator.createMutationObserver(mutations => {
             let shouldReapply = false;
-            
-            mutations.forEach((mutation) => {
+
+            mutations.forEach(mutation => {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                     shouldReapply = true;
                 }
             });
-            
+
             if (shouldReapply && this.settings && this.settings.isEnabled()) {
                 this.boundHandleDOMUpdates();
             }
         });
-        
+
         if (document.body) {
             this.observer.observe(document.body, DefaultConfig.MUTATION_OBSERVER_OPTIONS);
         } else {
@@ -155,20 +157,20 @@ export class ContentScriptController {
     handleMessage(message, _sender, _sendResponse) {
         try {
             switch (message.action) {
-            case MessageTypes.TOGGLE_EXTENSION:
-                this.handleToggleExtension(message.enabled);
-                break;
-                    
-            case MessageTypes.TOGGLE_SECTION:
-                this.handleToggleSection(message.sectionId, message.enabled);
-                break;
-                    
-            case MessageTypes.CHECK_REDIRECT:
-                this.handleCheckRedirect(message.sectionId);
-                break;
-                    
-            default:
-                Utils.log(`Unknown message action: ${message.action}`, 'warn');
+                case MessageTypes.TOGGLE_EXTENSION:
+                    this.handleToggleExtension(message.enabled);
+                    break;
+
+                case MessageTypes.TOGGLE_SECTION:
+                    this.handleToggleSection(message.sectionId, message.enabled);
+                    break;
+
+                case MessageTypes.CHECK_REDIRECT:
+                    this.handleCheckRedirect(message.sectionId);
+                    break;
+
+                default:
+                    Utils.log(`Unknown message action: ${message.action}`, 'warn');
             }
         } catch (error) {
             Utils.log(`Error handling message: ${error.message}`, 'error');
@@ -180,7 +182,7 @@ export class ContentScriptController {
      */
     handleToggleExtension(enabled) {
         this.settings.extensionEnabled = enabled;
-        
+
         if (enabled) {
             const enabledSections = this.settings.getEnabledSections(this.sections);
             this.handleRedirects(enabledSections);
@@ -195,7 +197,7 @@ export class ContentScriptController {
      */
     handleToggleSection(sectionId, enabled) {
         this.settings.sectionSettings[sectionId] = enabled;
-        
+
         if (enabled) {
             const section = this.sections.find(s => s.id === sectionId);
             if (section && section.isHideSection()) {
@@ -223,10 +225,12 @@ export class ContentScriptController {
      * Handle URL changes
      */
     handleUrlChange(newUrl, previousUrl) {
-        if (!this.settings || !this.settings.isEnabled()) {return;}
-        
+        if (!this.settings || !this.settings.isEnabled()) {
+            return;
+        }
+
         Utils.log(`URL changed from ${previousUrl} to ${newUrl}`);
-        
+
         const enabledSections = this.settings.getEnabledSections(this.sections);
         this.handleRedirects(enabledSections);
     }
@@ -235,8 +239,10 @@ export class ContentScriptController {
      * Handle DOM updates
      */
     handleDOMUpdates() {
-        if (!this.settings || !this.settings.isEnabled()) {return;}
-        
+        if (!this.settings || !this.settings.isEnabled()) {
+            return;
+        }
+
         const enabledSections = this.settings.getEnabledSections(this.sections);
         this.applyHiding(enabledSections);
     }
@@ -247,12 +253,9 @@ export class ContentScriptController {
     handleRedirects(enabledSections) {
         const currentPath = window.location.pathname;
         const currentHost = window.location.hostname;
-        
-        this.handleRedirectsUseCase.execute(
-            enabledSections,
-            currentPath,
-            currentHost,
-            (url) => window.location.replace(url)
+
+        this.handleRedirectsUseCase.execute(enabledSections, currentPath, currentHost, url =>
+            window.location.replace(url)
         );
     }
 
@@ -275,13 +278,13 @@ export class ContentScriptController {
             this.observer.disconnect();
             this.observer = null;
         }
-        
+
         if (chrome.runtime.onMessage.hasListener(this.boundHandleMessage)) {
             chrome.runtime.onMessage.removeListener(this.boundHandleMessage);
         }
-        
+
         this.elementHidingService.showAllElements();
-        
+
         Utils.log('ContentScriptController destroyed');
     }
 }

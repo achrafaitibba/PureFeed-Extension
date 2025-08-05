@@ -2,10 +2,7 @@
  * Settings entity representing user preferences
  */
 export class Settings {
-    constructor({
-        extensionEnabled = true,
-        sectionSettings = {}
-    } = {}) {
+    constructor({ extensionEnabled = true, sectionSettings = {} } = {}) {
         this.extensionEnabled = extensionEnabled;
         this.sectionSettings = sectionSettings;
     }

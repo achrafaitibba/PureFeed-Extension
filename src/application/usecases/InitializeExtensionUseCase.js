@@ -15,16 +15,16 @@ export class InitializeExtensionUseCase {
         // Load configuration
         const config = await this.configRepository.loadConfig();
         const sections = this.configRepository.getSections();
-        
+
         // Load settings
         const settings = await this.settingsRepository.loadSettings();
-        
+
         // Initialize section settings for any new sections
         settings.initializeSectionSettings(sections);
-        
+
         // Save updated settings
         await this.settingsRepository.saveSettings(settings);
-        
+
         return {
             config,
             settings,

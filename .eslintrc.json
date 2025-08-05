@@ -5,8 +5,10 @@
     "webextensions": true
   },
   "extends": [
-    "eslint:recommended"
+    "eslint:recommended",
+    "prettier"
   ],
+  "plugins": ["prettier"],
   "parserOptions": {
     "ecmaVersion": 2022,
     "sourceType": "module"
@@ -16,17 +18,14 @@
     "browser": "readonly"
   },
   "rules": {
-    // Code Quality
+    // Prettier integration
+    "prettier/prettier": "error",
+    
+    // Code Quality (non-formatting rules only)
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-console": ["warn", { "allow": ["warn", "error", "log"] }],
     "prefer-const": "error",
     "no-var": "error",
-    
-    // Style
-    "indent": ["error", 4],
-    "quotes": ["error", "single"],
-    "semi": ["error", "always"],
-    "comma-dangle": ["error", "never"],
     
     // Best Practices
     "eqeqeq": ["error", "always"],
@@ -38,7 +37,7 @@
     "no-throw-literal": "error",
     
     // ES6+
-    "arrow-spacing": "error",
+    "arrow-spacing": "off",
     "no-duplicate-imports": "error",
     "object-shorthand": "error",
     "prefer-arrow-callback": "error",

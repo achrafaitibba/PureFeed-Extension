@@ -45,12 +45,14 @@ export class Section {
      * Check if this section applies to the given hostname
      */
     appliesToHostname(hostname) {
-        if (!this.platform) {return false;}
-        
+        if (!this.platform) {
+            return false;
+        }
+
         // Dynamic hostname matching - check if hostname contains the platform name
         const platformVariations = this.getPlatformVariations(this.platform);
-        
-        return platformVariations.some(variation => 
+
+        return platformVariations.some(variation =>
             hostname.toLowerCase().includes(variation.toLowerCase())
         );
     }
@@ -59,22 +61,18 @@ export class Section {
      * Get all possible hostname variations for a platform
      */
     getPlatformVariations(platform) {
-        const baseVariations = [
-            platform,
-            `${platform}.com`,
-            `www.${platform}.com`
-        ];
+        const baseVariations = [platform, `${platform}.com`, `www.${platform}.com`];
 
         // Special cases for known platforms
         const specialCases = {
-            'twitter': ['twitter.com', 'x.com', 'www.twitter.com', 'www.x.com'],
-            'reddit': ['reddit.com', 'www.reddit.com', 'old.reddit.com', 'new.reddit.com'],
-            'youtube': ['youtube.com', 'www.youtube.com', 'm.youtube.com'],
-            'linkedin': ['linkedin.com', 'www.linkedin.com'],
-            'facebook': ['facebook.com', 'www.facebook.com', 'fb.com', 'm.facebook.com'],
-            'instagram': ['instagram.com', 'www.instagram.com'],
-            'tiktok': ['tiktok.com', 'www.tiktok.com'],
-            'pinterest': ['pinterest.com', 'www.pinterest.com']
+            twitter: ['twitter.com', 'x.com', 'www.twitter.com', 'www.x.com'],
+            reddit: ['reddit.com', 'www.reddit.com', 'old.reddit.com', 'new.reddit.com'],
+            youtube: ['youtube.com', 'www.youtube.com', 'm.youtube.com'],
+            linkedin: ['linkedin.com', 'www.linkedin.com'],
+            facebook: ['facebook.com', 'www.facebook.com', 'fb.com', 'm.facebook.com'],
+            instagram: ['instagram.com', 'www.instagram.com'],
+            tiktok: ['tiktok.com', 'www.tiktok.com'],
+            pinterest: ['pinterest.com', 'www.pinterest.com']
         };
 
         return specialCases[platform.toLowerCase()] || baseVariations;
@@ -84,15 +82,19 @@ export class Section {
      * Check if current path should redirect to new path
      */
     shouldRedirect(currentPath) {
-        if (!this.isRedirectSection()) {return false;}
-        
+        if (!this.isRedirectSection()) {
+            return false;
+        }
+
         // Exact match
-        if (currentPath === this.currentPath) {return true;}
-        
+        if (currentPath === this.currentPath) {
+            return true;
+        }
+
         // Handle trailing slashes
         const normalizedCurrent = currentPath.replace(/\/$/, '') || '/';
         const normalizedTarget = this.currentPath.replace(/\/$/, '') || '/';
-        
+
         return normalizedCurrent === normalizedTarget;
     }
 }

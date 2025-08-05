@@ -16,10 +16,12 @@ export class ElementHidingService {
      * @param {Function} elementClicker - Function to click elements
      */
     hideSection(section, xpathEvaluator, elementClicker) {
-        if (!section.isHideSection()) {return false;}
-        
+        if (!section.isHideSection()) {
+            return false;
+        }
+
         let elementsHidden = false;
-        
+
         section.xpaths.forEach(xpath => {
             const elements = xpathEvaluator(xpath);
             elements.forEach(element => {
@@ -27,24 +29,24 @@ export class ElementHidingService {
                 if (!element || this.hiddenElements.has(element)) {
                     return;
                 }
-                
+
                 // Only hide elements that are currently visible
                 if (element.style.display !== 'none') {
                     const originalDisplay = element.style.display || 'block';
                     const hiddenElement = new HiddenElement(element, section.id, originalDisplay);
-                    
+
                     this.hiddenElements.set(element, hiddenElement);
                     hiddenElement.hide();
                     elementsHidden = true;
                 }
             });
         });
-        
+
         // Click the specified element if any elements were hidden and toClick is defined
         if (elementsHidden && section.hasClickAction()) {
             elementClicker(section.toClick);
         }
-        
+
         return elementsHidden;
     }
 
@@ -54,14 +56,14 @@ export class ElementHidingService {
      */
     showSection(sectionId) {
         const elementsToRemove = [];
-        
+
         this.hiddenElements.forEach((hiddenElement, element) => {
             if (hiddenElement.belongsToSection(sectionId)) {
                 hiddenElement.show();
                 elementsToRemove.push(element);
             }
         });
-        
+
         elementsToRemove.forEach(element => {
             this.hiddenElements.delete(element);
         });
@@ -71,7 +73,7 @@ export class ElementHidingService {
      * Show all hidden elements
      */
     showAllElements() {
-        this.hiddenElements.forEach((hiddenElement) => {
+        this.hiddenElements.forEach(hiddenElement => {
             hiddenElement.show();
         });
         this.hiddenElements.clear();

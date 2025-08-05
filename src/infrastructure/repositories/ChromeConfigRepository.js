@@ -19,12 +19,12 @@ export class ChromeConfigRepository extends ConfigRepository {
         try {
             const response = await fetch(chrome.runtime.getURL('config.json'));
             this.config = await response.json();
-            
+
             // Convert raw config to Section entities
-            this.sections = (this.config.sections || []).map(sectionData => 
-                new Section(sectionData)
+            this.sections = (this.config.sections || []).map(
+                sectionData => new Section(sectionData)
             );
-            
+
             return this.config;
         } catch (error) {
             console.error('Failed to load config:', error);

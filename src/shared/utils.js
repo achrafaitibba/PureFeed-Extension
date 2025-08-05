@@ -87,13 +87,14 @@ export class Utils {
         const prefix = `[PureFeed ${timestamp}]`;
 
         switch (level) {
-        case 'warn':
-            console.warn(prefix, message);
-            break;
-        case 'error':
-            console.error(prefix, message);                break;
-        default:
-            console.log(prefix, message);
+            case 'warn':
+                console.warn(prefix, message);
+                break;
+            case 'error':
+                console.error(prefix, message);
+                break;
+            default:
+                console.log(prefix, message);
         }
     }
 }

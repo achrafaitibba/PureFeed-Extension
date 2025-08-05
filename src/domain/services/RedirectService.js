@@ -12,21 +12,24 @@ export class RedirectService {
      * @returns {boolean} True if redirect was performed
      */
     handleRedirects(sections, currentPath, currentHost, redirectFunction) {
-        const redirectSections = sections.filter(section => 
-            section.isRedirectSection() && section.appliesToHostname(currentHost)
+        const redirectSections = sections.filter(
+            section => section.isRedirectSection() && section.appliesToHostname(currentHost)
         );
-        
+
         for (const section of redirectSections) {
             if (section.shouldRedirect(currentPath)) {
-                const newUrl = window.location.origin + section.newPath + 
-                             window.location.search + window.location.hash;
-                
+                const newUrl =
+                    window.location.origin +
+                    section.newPath +
+                    window.location.search +
+                    window.location.hash;
+
                 console.warn(`Redirecting from ${currentPath} to ${section.newPath}`);
                 redirectFunction(newUrl);
                 return true; // Only redirect once
             }
         }
-        
+
         return false;
     }
 
@@ -37,8 +40,8 @@ export class RedirectService {
      * @returns {boolean} True if redirect sections exist for current platform
      */
     hasRedirectsForPlatform(sections, hostname) {
-        return sections.some(section => 
-            section.isRedirectSection() && section.appliesToHostname(hostname)
+        return sections.some(
+            section => section.isRedirectSection() && section.appliesToHostname(hostname)
         );
     }
 }
