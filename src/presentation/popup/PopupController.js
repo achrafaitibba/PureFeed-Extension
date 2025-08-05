@@ -127,7 +127,7 @@ export class PopupController {
         
         // Build label text with indicators
         //todo - keep this emojis ?
-        let labelText = section.name;
+        // let labelText = section.name;
         // if (section.isRedirectSection()) {
         //     labelText += ' 🔄';
         // }
@@ -135,7 +135,7 @@ export class PopupController {
         //     labelText += ' 👆';
         // }
         
-        label.textContent = labelText;
+        label.textContent = section.name;
         
         const toggle = document.createElement('div');
         toggle.className = 'section-toggle';
