@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+content-bundled.js
+popup-bundled.js
+manifest.json
+manifest-modular.json
+packages/
+
+# Generated files
+*.min.js
+dist/
+build/
+
+# Development and build scripts
+build.cjs
+generate-*.cjs
+*.config.js
+
+# Documentation and markdown
+*.md
+README.md
+LICENSE
+
+# Test files
+tests/
+test-*.js
+minimal-*.js
+manifest-test.json
+
+# Development files
+.DS_Store
+.vscode/
+*.log
+
+# Test coverage
+coverage/
+
+# Extension packages
+*.zip
+*.crx
+*.pem
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE files
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db

@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+*-bundled.js
+*-bundled.html
+*-bundled.json
+manifest.json
+manifest-modular.json
+popup-bundled.html
+
+# Packages and distribution
+packages/
+*.zip
+*.crx
+*.pem
+
+# Test files (moved to tests/ directory)
+tests/
+
+# Logs and misc
+*.log
+.DS_Store
+
+# Environment files
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Extension store files
+*.zip
+*.crx
+*.pem
+
+# Backup files
+backup/
+
+# Test files
+test-*.js
+minimal-*.js
+manifest-test.json
+
+# Logs
+*.log
