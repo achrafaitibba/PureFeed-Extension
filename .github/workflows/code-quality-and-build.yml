@@ -108,7 +108,7 @@ jobs:
     - name: Check for sensitive files
       run: |
         # Check for common sensitive files/patterns
-        sensitive_files=$(find . -name "*.key" -o -name "*.pem" -o -name ".env" | grep -v node_modules)
+        sensitive_files=$(find . -name "*.key" -o -name "*.pem" -o -name ".env" | grep -v node_modules || true)
         if [ -n "$sensitive_files" ]; then
           echo "Sensitive files found:"
           echo "$sensitive_files"
