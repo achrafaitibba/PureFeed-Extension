@@ -1,5 +1,10 @@
 name: Release
 
+# Add required permissions for GitHub token
+permissions:
+  contents: write
+  actions: read
+
 on:
   push:
     tags:
@@ -179,6 +184,51 @@ jobs:
           VERSION="${GITHUB_REF#refs/tags/}"
         fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+    - name: Update release with installation instructions
+      run: |
+        # Create installation instructions
+        echo "## 🚀 Easy Installation (No Technical Knowledge Required!)" > install_instructions.md
+        echo "" >> install_instructions.md
+        echo "### Quick Install" >> install_instructions.md
+        echo "1. **Download**: Click \`purefeed-extension-latest.zip\` below" >> install_instructions.md
+        echo "2. **Extract**: Unzip the downloaded file to any folder" >> install_instructions.md
+        echo "3. **Install**:" >> install_instructions.md
+        echo "   - Open your browser extensions page:" >> install_instructions.md
+        echo "     - **Chrome**: \`chrome://extensions/\`" >> install_instructions.md
+        echo "     - **Edge**: \`edge://extensions/\`" >> install_instructions.md
+        echo "     - **Brave**: \`brave://extensions/\`" >> install_instructions.md
+        echo "   - Enable \"Developer mode\" (toggle in top right)" >> install_instructions.md
+        echo "   - Click \"Load unpacked\" and select the extracted folder" >> install_instructions.md
+        echo "4. **Done**: The PureFeed icon should appear in your browser toolbar!" >> install_instructions.md
+        echo "" >> install_instructions.md
+        echo "### Available Downloads" >> install_instructions.md
+        echo "- **\`purefeed-extension-latest.zip\`** - Always the newest version (recommended)" >> install_instructions.md
+        echo "- **\`purefeed-extension-v${{ steps.extract_version.outputs.version }}.zip\`** - This specific version" >> install_instructions.md
+        echo "" >> install_instructions.md
+        echo "## ✨ What's New" >> install_instructions.md
+        echo "See the changelog above for detailed changes in this release." >> install_instructions.md
+        echo "" >> install_instructions.md
+        echo "## 🌐 Browser Support" >> install_instructions.md
+        echo "- ✅ **Chrome** - Full support" >> install_instructions.md
+        echo "- ✅ **Microsoft Edge** - Full support" >> install_instructions.md
+        echo "- ✅ **Brave Browser** - Full support" >> install_instructions.md
+        echo "- ✅ **Other Chromium browsers** - Full support" >> install_instructions.md
+        echo "- 🚧 **Firefox** - Coming soon" >> install_instructions.md
+        echo "- 🚧 **Safari** - Planned" >> install_instructions.md
+        echo "" >> install_instructions.md
+        echo "## 🆘 Need Help?" >> install_instructions.md
+        echo "Having trouble? [Open an issue](https://github.com/${{ github.repository }}/issues) and we'll help you get set up!" >> install_instructions.md
+        
+        # Get current release body and append instructions
+        CURRENT_BODY=$(gh release view "${{ steps.extract_version.outputs.version }}" --json body -q '.body')
+        INSTALL_INSTRUCTIONS=$(cat install_instructions.md)
+        
+        # Update release with combined content
+        printf "%s\n\n%s" "$CURRENT_BODY" "$INSTALL_INSTRUCTIONS" | gh release edit "${{ steps.extract_version.outputs.version }}" --notes-file -
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   notify-completion:
     runs-on: ubuntu-latest
     needs: [create-release, build-and-package, update-release-notes]
@@ -188,11 +238,11 @@ jobs:
     - name: Release Status
       run: |
         if [ "${{ needs.build-and-package.result }}" = "success" ]; then
-          echo "Release ${{ github.ref_name }} completed successfully!"
-          echo "Production-ready extension package created"
-          echo "Direct download link available for website integration"
+          echo "🎉 Release ${{ github.ref_name }} completed successfully!"
+          echo "📦 Production-ready extension package created"
+          echo "🔗 Direct download link available for website integration"
           echo "⚡ Ready for immediate user installation"
         else
-          echo "Release ${{ github.ref_name }} failed!"
+          echo "❌ Release ${{ github.ref_name }} failed!"
           exit 1
         fi
