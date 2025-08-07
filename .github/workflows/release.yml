@@ -1,0 +1,242 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
+        type: string
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_id: ${{ steps.create_release.outputs.id }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Extract version
+      id: extract_version
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION="${GITHUB_REF#refs/tags/}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "version_number=${VERSION#v}" >> $GITHUB_OUTPUT
+        
+    - name: Generate changelog
+      id: changelog
+      run: |
+        if [ -f CHANGELOG.md ]; then
+          # Extract changelog for this version
+          awk '/^## \[?'${{ steps.extract_version.outputs.version_number }}'\]?/{flag=1; next} /^## \[?[0-9]/{flag=0} flag' CHANGELOG.md > current_changelog.md
+          echo "changelog_exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "changelog_exists=false" >> $GITHUB_OUTPUT
+          echo "No changelog available for this release." > current_changelog.md
+        fi
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.extract_version.outputs.version }}
+        release_name: PureFeed Extension ${{ steps.extract_version.outputs.version }}
+        body_path: current_changelog.md
+        draft: false
+        prerelease: ${{ contains(steps.extract_version.outputs.version, 'beta') || contains(steps.extract_version.outputs.version, 'alpha') }}
+
+  build-and-package:
+    runs-on: ubuntu-latest
+    needs: create-release
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        
+    - name: Extract version
+      id: extract_version
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION="${GITHUB_REF#refs/tags/}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "version_number=${VERSION#v}" >> $GITHUB_OUTPUT
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Build extension
+      run: npm run build
+      
+    - name: Create package directory
+      run: |
+        mkdir -p packages/chrome-store
+        
+        # Copy ONLY essential extension files (no development files)
+        cp manifest.json packages/chrome-store/
+        cp popup.html packages/chrome-store/
+        cp content-bundled.js packages/chrome-store/
+        cp popup-bundled.js packages/chrome-store/
+        cp config.json packages/chrome-store/
+        cp -r icons packages/chrome-store/
+        
+        # Verify all required files are present
+        echo "Checking required files..."
+        for file in manifest.json popup.html content-bundled.js popup-bundled.js config.json; do
+          if [ ! -f "packages/chrome-store/$file" ]; then
+            echo "ERROR: Required file missing: $file"
+            exit 1
+          fi
+        done
+        echo "All required files present ✓"
+        
+    - name: Create production ZIP for direct download
+      run: |
+        cd packages/chrome-store
+        zip -r ../../purefeed-extension-v${{ steps.extract_version.outputs.version_number }}.zip .
+        cd ../../
+        
+        # Create a generic latest version link
+        cp purefeed-extension-v${{ steps.extract_version.outputs.version_number }}.zip purefeed-extension-latest.zip
+        
+    - name: Verify package
+      run: |
+        echo "📦 Production Package Contents:"
+        unzip -l purefeed-extension-v${{ steps.extract_version.outputs.version_number }}.zip
+        
+        echo ""
+        echo "📊 Package Information:"
+        ls -lh purefeed-extension-v${{ steps.extract_version.outputs.version_number }}.zip
+        ls -lh purefeed-extension-latest.zip
+        
+        echo ""
+        echo "✅ Ready for direct download and browser installation!"
+        
+    - name: Upload Versioned Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./purefeed-extension-v${{ steps.extract_version.outputs.version_number }}.zip
+        asset_name: purefeed-extension-v${{ steps.extract_version.outputs.version_number }}.zip
+        asset_content_type: application/zip
+        
+    - name: Upload Latest Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./purefeed-extension-latest.zip
+        asset_name: purefeed-extension-latest.zip
+        asset_content_type: application/zip
+
+  update-release-notes:
+    runs-on: ubuntu-latest
+    needs: [create-release, build-and-package]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Extract version
+      id: extract_version
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION="${GITHUB_REF#refs/tags/}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+    - name: Update release with installation instructions
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const release = await github.rest.repos.getReleaseByTag({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag: '${{ steps.extract_version.outputs.version }}'
+          });
+          
+          const installInstructions = `
+          
+          ## 🚀 Easy Installation (No Technical Knowledge Required!)
+          
+          ### Quick Install
+          1. **Download**: Click \`purefeed-extension-latest.zip\` below
+          2. **Extract**: Unzip the downloaded file to any folder
+          3. **Install**: 
+             - Open your browser extensions page:
+               - **Chrome**: \`chrome://extensions/\`
+               - **Edge**: \`edge://extensions/\`
+               - **Brave**: \`brave://extensions/\`
+             - Enable "Developer mode" (toggle in top right)
+             - Click "Load unpacked" and select the extracted folder
+          4. **Done**: The PureFeed icon should appear in your browser toolbar!
+          
+          ### Available Downloads
+          - **\`purefeed-extension-latest.zip\`** - Always the newest version (recommended)
+          - **\`purefeed-extension-v${{ steps.extract_version.outputs.version }}.zip\`** - This specific version
+          
+          ## ✨ What's New
+          See the changelog above for detailed changes in this release.
+          
+          ## 🌐 Browser Support
+          - ✅ **Chrome** - Full support
+          - ✅ **Microsoft Edge** - Full support
+          - ✅ **Brave Browser** - Full support
+          - ✅ **Other Chromium browsers** - Full support
+          - 🚧 **Firefox** - Coming soon
+          - 🚧 **Safari** - Planned
+          
+          ## 🆘 Need Help?
+          Having trouble? [Open an issue](${context.payload.repository.html_url}/issues) and we'll help you get set up!
+          `;
+          
+          await github.rest.repos.updateRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            release_id: release.data.id,
+            body: release.data.body + installInstructions
+          });
+
+  notify-completion:
+    runs-on: ubuntu-latest
+    needs: [create-release, build-and-package, update-release-notes]
+    if: always()
+    
+    steps:
+    - name: Release Status
+      run: |
+        if [ "${{ needs.build-and-package.result }}" = "success" ]; then
+          echo "🎉 Release ${{ github.ref_name }} completed successfully!"
+          echo "📦 Production-ready extension package created"
+          echo "🔗 Direct download link available for website integration"
+          echo "⚡ Ready for immediate user installation"
+        else
+          echo "❌ Release ${{ github.ref_name }} failed!"
+          exit 1
+        fi
