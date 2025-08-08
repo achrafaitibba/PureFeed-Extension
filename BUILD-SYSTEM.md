@@ -186,4 +186,3 @@ npm run zip               # Create distribution package
 3. **Minification** for smaller bundle size
 4. **Watch mode** for automatic rebuilding
 5. **TypeScript support** for better development experience
-
