@@ -4,13 +4,13 @@
             "id": "twitter_recommendations",
             "name": "X: Who to Follow/You might like",
             "platform": "twitter",
-            "xpaths": ["//aside[@aria-label='Who to follow']/parent::div"]
+            "xpaths": ["//aside[@aria-label='Who to follow']/parent::div/parent::div"]
         },
         {
             "id": "twitter_trends",
             "name": "X: What's happening aka 'Trends'",
             "platform": "twitter",
-            "xpaths": ["//div[@aria-label='Timeline: Trending now']/parent::section"]
+            "xpaths": ["//div[@aria-label='Timeline: Trending now']/parent::section/parent::div"]
         },
         {
             "id": "twitter_foryoupage",
