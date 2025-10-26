@@ -16,8 +16,8 @@
             "id": "twitter_foryoupage",
             "name": "X: For You Page",
             "platform": "twitter",
-            "xpaths": ["//div[@role='presentation']//span[text()='For you']/parent::div"],
-            "toClick": "//div[@role='presentation']//span[text()='Following']/parent::div"
+            "xpaths": ["//div[@role='presentation']//span[text()='For you']/ancestor::a"],
+            "toClick": "//div[@role='presentation']//span[text()='Following']/ancestor::div"
         },
         {
             "id": "linkedin_profiles",
