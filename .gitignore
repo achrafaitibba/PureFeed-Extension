@@ -10,7 +10,8 @@ build/
 manifest.json
 manifest-modular.json
 popup-bundled.html
-
+DEVELOPMENT.md 
+FIREFOX-COMPATIBILITY-GUIDE.md
 # Packages and distribution
 packages/
 *.zip

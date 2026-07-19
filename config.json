@@ -1,5 +1,11 @@
 {
     "sections": [
+          {
+            "id": "instagram_suggestions",
+            "name": "IG: Suggested for you",
+            "platform": "instagram",
+            "xpaths": ["//span[normalize-space(.)='Suggested for you'] /ancestor::div[./a[@href='/explore/people/']][1] /parent::div"]
+        },
         {
             "id": "twitter_recommendations",
             "name": "X: Who to Follow/You might like",
