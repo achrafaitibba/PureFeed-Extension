@@ -38,10 +38,28 @@
             "xpaths": ["//h2[contains(text(),'More suggestions for you')]/ancestor::section[1]"]
         },
         {
-            "id": "linkedin_suggestions",
+            "id": "linkedin_people_you_may_know",
             "name": "LinkedIn: People you may know",
             "platform": "linkedin",
             "xpaths": ["//span[contains(text(),'People you may know')]/ancestor::section[1]"]
+        },
+        {
+            "id": "linkedin_viewers_also_viewed",
+            "name": "LinkedIn: Who your viewers also viewed",
+            "platform": "linkedin",
+            "xpaths": ["//span[contains(text(),'Who your viewers also viewed')]/ancestor::section[1]"]
+        },
+        {
+            "id": "linkedin_you_might_like",
+            "name": "LinkedIn: You might like",
+            "platform": "linkedin",
+            "xpaths": ["//span[contains(text(),'You might like')]/ancestor::section[1]"]
+        },
+        {
+            "id": "linkedin_related_people",
+            "name": "LinkedIn: Related people",
+            "platform": "linkedin",
+            "xpaths": ["//span[contains(text(),'Related people')]/ancestor::section[1]"]
         },
         {
             "id": "linkedin_add_your_feed",
